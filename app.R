@@ -83,8 +83,9 @@ server <- function(input, output, session) {
     )
     
     # final output
+    names(tibble_out) <- "Medication Combinations"
     tibble_out
-  
+    
   })
     
 }
