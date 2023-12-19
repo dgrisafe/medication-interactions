@@ -8,7 +8,7 @@ names(medsPsych) <- "meds"
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Medications"),
+    titlePanel("Medication Interactions"),
 
     # Sidebar 
     sidebarLayout(
@@ -43,7 +43,21 @@ ui <- fluidPage(
       # main panel output
       mainPanel(
         
-        # show text as output
+        h2("Antipsychotic/Mood Stabilizer Polypharmacy Information Sheet"),
+        p("Your treatment team may prescribe more than one medication at a time."),
+        
+        # h3("Why would I receive two similar types of medication?"),
+        # p("1. Improve or optimize your treatment by using medications that work in different ways to treat the same condition. This can be a useful strategy if one medication used alone was not adequately treating your symptoms."),
+        # p("2. Your provider may be attempting to switch from one medication to another. In order to safely switch to another medication, they may have to slowly decrease the dose of one and increase the dose of another medication."),
+        # 
+        # h3("What are the potential risks of taking two or more antipsychotic medications at the same time?"),
+        # p("- Increased sedation: Taking two or more antipsychotics can increase the amount of tiredness that you are feeling."),
+        # p("- Lower seizure threshold: This combination of medication may possibly increase risk of seizures for patients who already have a seizure disorder."),
+        # p("- QT prolongation: This can occur when the heart muscle takes a longer time to contract than to relax. Taking two or more medications with this risk can lead to an abnormal heart rhythm. Report any chest pain or palpitations to your physician immediately."),
+        # p("- Extrapyramidal symptoms: This combination of medications may lead to increased risk of developing a movement disorder. Report any abnormal or uncontrolled movements to your prescriber."),
+        # p("- Peripheral edema: Depakote and risperidone (a type of antipsychotic) together can lead to swelling of the limbs. Contact your prescriber if you notice any swelling in your limbs."),
+        
+        h3("Possible medication combinations include:"),
         tableOutput("table")
         
       )
@@ -64,7 +78,7 @@ server <- function(input, output, session) {
     
     # size of target vectors
     r <- input$n_combo
-    
+
     # create combinations of all possible entries
     tibble_combo <- tibble::as_tibble(
       gtools::combinations(n=n, r=r, v = meds, set = TRUE, repeats.allowed = FALSE)
