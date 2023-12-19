@@ -7,7 +7,6 @@
 .httr-oauth
 .DS_Store
 *.pdf
-*.html
 *.csv
 *.xlsx
 *.xls
