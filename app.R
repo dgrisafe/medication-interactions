@@ -74,8 +74,8 @@ server <- function(input, output, session) {
     r <- input$n_combo
     
     # as.data.frame(t(combn(vec, 2, simplify = TRUE)))
-    tibble_out <- as_tibble(
-      combinations(n=n, r=r, v = meds, set = TRUE, repeats.allowed = FALSE)
+    tibble_out <- tibble::as_tibble(
+      gtools::combinations(n=n, r=r, v = meds, set = TRUE, repeats.allowed = FALSE)
     )
     
     names(tibble_out) <- paste("Medication", 1:r)
