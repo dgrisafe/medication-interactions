@@ -83,7 +83,7 @@ server <- function(input, output, session) {
     )
     
     # final output
-    names(tibble_out) <- "Medication Combinations"
+    names(tibble_out) <- paste("Combinations of", r, "Medications")
     tibble_out
     
   })
