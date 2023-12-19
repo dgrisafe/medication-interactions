@@ -1,4 +1,3 @@
-#
 # This is a Shiny web application. You can run the application by clicking
 # the 'Run App' button above.
 #
@@ -9,42 +8,82 @@
 
 library(shiny)
 
+# input .txt file w/common psychiatric medicaions on each line
+medsPsych <- as.data.frame(read.table(file = "medicationsPsychiatry.txt", header = FALSE, sep = "\n"))
+names(medsPsych) <- "meds"
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    titlePanel("Medications"),
 
-    # Sidebar with a slider input for number of bins 
+    # Sidebar 
     sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
+      
+      sidebarPanel(
+        
+        # input box to enter number of combinations
+        numericInput(
+          inputId = "n_combo",
+          label = "Number of medications to combine",
+          value = 2,
+          min = 2,
+          max = 10
         ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
-        )
+        
+        # input box to enter medications
+        selectizeInput(
+          inputId = "medicationsPsychiatry",
+          label = "Enter list of medications, separated by commas",
+          choices = medsPsych$meds,
+          selected = NULL,
+          multiple = TRUE,
+          width = "100%",
+          options = list(
+            'plugins' = list('remove_button'),
+            'create' = TRUE,
+            'persist' = TRUE
+            )
+          )
+      ),
+      
+      # main panel output
+      mainPanel(
+        
+        # show text as output
+        tableOutput("table")
+        
+      )
     )
 )
 
-# Define server logic required to draw a histogram
-server <- function(input, output) {
+# Define server logic required to create table of combinations
+server <- function(input, output, session) {
 
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white',
-             xlab = 'Waiting time to next eruption (in mins)',
-             main = 'Histogram of waiting times')
-    })
+  # run each time a user changes text
+  output$table <- renderTable({
+ 
+    # source vector       
+    meds <- as.character(input$medicationsPsychiatry)
+    
+    # size of source vector
+    n <- length(meds)
+    
+    # size of target vectors
+    r <- input$n_combo
+    
+    # as.data.frame(t(combn(vec, 2, simplify = TRUE)))
+    tibble_out <- as_tibble(
+      combinations(n=n, r=r, v = meds, set = TRUE, repeats.allowed = FALSE)
+    )
+    
+    names(tibble_out) <- paste("Medication", 1:r)
+    
+    tibble_out
+    
+  })
+    
 }
 
 # Run the application 
