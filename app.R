@@ -45,7 +45,7 @@ ui <- fluidPage(
           inputId = "filter_med",
           label = "Filter combinations by medicine",
           value = NULL,
-          placeholder = "type in the name of a single medicaiton (not case sensitive)"
+          placeholder = "type the name of a single medicaiton (not case sensitive)"
         )
       ),
       
