@@ -15,15 +15,6 @@ ui <- fluidPage(
       
       sidebarPanel(
         
-        # input box to enter number of combinations
-        numericInput(
-          inputId = "n_combo",
-          label = "Number of medications to combine",
-          value = 2,
-          min = 2,
-          max = 10
-        ),
-        
         # input box to enter medications
         selectizeInput(
           inputId = "medicationsPsychiatry",
@@ -39,6 +30,15 @@ ui <- fluidPage(
           placeholder = "e.g., abilify PO, haloperidol, quetiapine"
           )
           ),
+
+        # input box to enter number of combinations
+        numericInput(
+          inputId = "n_combo",
+          label = "Number of medications to combine",
+          value = 2,
+          min = 2,
+          max = 10
+        ),
         
         # text to filter combinations by
         textInput(
