@@ -35,9 +35,18 @@ ui <- fluidPage(
           options = list(
             'plugins' = list('remove_button'),
             'create' = TRUE,
-            'persist' = TRUE
-            )
+            'persist' = TRUE,
+          placeholder = "e.g., abilify PO, haloperidol, quetiapine"
           )
+          ),
+        
+        # text to filter combinations by
+        textInput(
+          inputId = "filter_med",
+          label = "Filter combinations by medicine",
+          value = NULL,
+          placeholder = "type in the name of a single medicaiton (not case sensitive)"
+        )
       ),
       
       # main panel output
@@ -79,11 +88,23 @@ server <- function(input, output, session) {
     # size of target vectors
     r <- input$n_combo
 
+    # string to filter medication names
+    filter_med1 <- stringr::str_to_lower(input$filter_med)
+    
     # create combinations of all possible entries
     tibble_combo <- tibble::as_tibble(
       gtools::combinations(n=n, r=r, v = meds, set = TRUE, repeats.allowed = FALSE)
     )
     names(tibble_combo) <- paste("Medication", 1:r)
+    
+    # if text is provided for filtering by medication...
+    if(!is.null(filter_med1)){
+      # ...then filter medicine by that medication
+      tibble_combo <- dplyr::filter(
+        .data = tibble_combo,
+        dplyr::if_any(.cols = dplyr::everything(), .fns = ~ grepl(filter_med1, .))
+      )
+    }
     
     # format table for document
     tibble_out <- dplyr::mutate(
