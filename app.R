@@ -92,17 +92,18 @@ server <- function(input, output, session) {
  
     # expand.grid method
     meds <- as.character(input$meds_antipsychotics)
-    meds <- expand.grid(meds,meds)
+    meds <- crossing(meds,meds)
     # size of source vector
     n <- length(meds)
     # size of target vectors
     r <- input$n_combo
+    return(meds)
     
     tibble_combo <- as_tibble(
       meds
     )
     names(tibble_combo) <- paste("Medication", 1:r)
-    
+
     # old method using gtools combine fn
     # # source vector       
     # meds <- as.character(input$meds_antipsychotics)
