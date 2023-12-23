@@ -33,7 +33,7 @@ inputMedClass <- function(inTitle, inId,inMeds){
       inputId = "n_combo",
       label = "Number of combinations",
       width = "50%",
-      value = 1,
+      value = 2,
       min = 1,
       max = 5
     )
@@ -90,24 +90,34 @@ server <- function(input, output, session) {
   # run each time a user changes text
   output$table <- renderTable({
  
-    # source vector       
+    # expand.grid method
     meds <- as.character(input$meds_antipsychotics)
-    
+    meds <- expand.grid(meds,meds)
     # size of source vector
     n <- length(meds)
-    
     # size of target vectors
     r <- input$n_combo
-
-    # string to filter medication names
-    filter_med1 <- str_to_lower(input$filter_med)
     
-    # create combinations of all possible entries
     tibble_combo <- as_tibble(
-      combinations(n=n, r=r, v = meds, set = TRUE, repeats.allowed = FALSE)
+      meds
     )
     names(tibble_combo) <- paste("Medication", 1:r)
     
+    # old method using gtools combine fn
+    # # source vector       
+    # meds <- as.character(input$meds_antipsychotics)
+    # # size of source vector
+    # n <- length(meds)
+    # # size of target vectors
+    # r <- input$n_combo
+    # # create combinations of all possible entries
+    # tibble_combo <- as_tibble(
+    #   combinations(n=n, r=r, v = meds, set = TRUE, repeats.allowed = FALSE)
+    # )
+    # names(tibble_combo) <- paste("Medication", 1:r)
+    
+    # string to filter medication names
+    filter_med1 <- str_to_lower(input$filter_med)
     # if text is provided for filtering by medication...
     if(!is.null(filter_med1)){
       # ...then filter medicine by that medication
