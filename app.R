@@ -17,7 +17,7 @@ medsMisc <- as.data.frame(read.table(file = "medication_lists/medlis_misc.txt", 
 names(medsMisc) <- "meds"
 label_meds <- "Type in medications, separated by commas"
 
-# Define UI for application that draws a histogram
+# Define UI for combinations of psychiatric medications
 ui <- fluidPage(
 
     # Application title
