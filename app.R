@@ -2,20 +2,44 @@ library(shiny)  # http://shiny.rstudio.com/
 library(tidyverse)
 library(gtools)
 
-# input .txt file w/common psychiatric medicaions on each line
-medsAntiPsy <- as.data.frame(read.table(file = "medication_lists/medlis_antipsychotics.txt", header = FALSE, sep = "\n"))
-names(medsAntiPsy) <- "meds"
-medsLAIs <- as.data.frame(read.table(file = "medication_lists/medlis_lais.txt", header = FALSE, sep = "\n"))
-names(medsLAIs) <- "meds"
-medsMood <- as.data.frame(read.table(file = "medication_lists/medlis_moodstabilizers.txt", header = FALSE, sep = "\n"))
-names(medsMood) <- "meds"
-medsAntiDep <- as.data.frame(read.table(file = "medication_lists/medlis_antidepressants.txt", header = FALSE, sep = "\n"))
-names(medsAntiDep) <- "meds"
-medsBenzo <- as.data.frame(read.table(file = "medication_lists/medlis_benzos.txt", header = FALSE, sep = "\n"))
-names(medsBenzo) <- "meds"
-medsMisc <- as.data.frame(read.table(file = "medication_lists/medlis_misc.txt", header = FALSE, sep = "\n"))
-names(medsMisc) <- "meds"
-label_meds <- "Type in medications, separated by commas"
+# input .txt files of psychiatric medications classes with each line listing a common medications
+medsList <- sapply(
+  X = c("antipsychotics", "lais", "moodstabilizers", "antidepressants", "benzos", "misc"),
+  FUN = function(x){list(read.table(file = paste0("medication_lists/medlis_", x, ".txt"), col.names = "meds", header = FALSE, sep = "\n"))}
+  )
+names(medsList) <- c("medsAntiPsy", "medsLAIs", "medsMood", "medsAntiDep", "medsBenzo", "medsMisc")
+
+# input medications to UI
+inputMedClass <- function(inTitle, inId,inMeds){
+  div(
+    h3(inTitle),
+    # input box to enter medications
+    selectizeInput(
+      inputId = inId,
+      label = "Type in medications, separated by commas",
+      choices = inMeds[["meds"]],
+      selected = NULL,
+      multiple = TRUE,
+      width = "100%",
+      options = list(
+        'plugins' = list('remove_button'),
+        'create' = TRUE,
+        'persist' = TRUE,
+        placeholder = paste(inMeds[[1]], collapse = ", ")
+      )
+    ),
+    # input box to enter number of combinations
+    numericInput(
+      inputId = "n_combo",
+      label = "Number of combinations",
+      width = "50%",
+      value = 1,
+      min = 1,
+      max = 5
+    )
+  )
+  
+}
 
 # Define UI for combinations of psychiatric medications
 ui <- fluidPage(
@@ -26,177 +50,14 @@ ui <- fluidPage(
     # Sidebar 
     sidebarLayout(
       
-      # antipsychotics
       sidebarPanel(
         
-        div(
-          h3("Antipsychotics"),
-          # input box to enter medications
-          selectizeInput(
-            inputId = "meds_antipsychotics",
-            label = label_meds,
-            choices = medsAntiPsy$meds,
-            selected = NULL,
-            multiple = TRUE,
-            width = "100%",
-            options = list(
-              'plugins' = list('remove_button'),
-              'create' = TRUE,
-              'persist' = TRUE,
-            placeholder = paste(medsAntiPsy[[1]], collapse = ", ")
-            )
-            ),
-          # input box to enter number of combinations
-          numericInput(
-            inputId = "n_combo",
-            label = "Number of combinations",
-            width = "50%",
-            value = 2,
-            min = 2,
-            max = 10
-          )
-          ),
-
-        # long-acting injectables
-        div(
-          h3("Long-Acting Injectables"),
-          # input box to enter medications
-          selectizeInput(
-            inputId = "meds_lais",
-            label = label_meds,
-            choices = medsLAIs$meds,
-            selected = NULL,
-            multiple = TRUE,
-            width = "100%",
-            options = list(
-              'plugins' = list('remove_button'),
-              'create' = TRUE,
-              'persist' = TRUE,
-            placeholder = paste(medsLAIs[[1]], collapse = ", ")
-            )
-            ),
-          # input box to enter number of combinations
-          numericInput(
-            inputId = "n_combo",
-            label = "Number of combinations",
-            width = "50%",
-            value = 2,
-            min = 2,
-            max = 10
-          )
-        ),
-        
-        div(
-          h3("Mood Stabilizers"),
-          # input box to enter medications
-          selectizeInput(
-            inputId = "meds_lais",
-            label = label_meds,
-            choices = medsMood$meds,
-            selected = NULL,
-            multiple = TRUE,
-            width = "100%",
-            options = list(
-              'plugins' = list('remove_button'),
-              'create' = TRUE,
-              'persist' = TRUE,
-              placeholder = paste(medsMood[[1]], collapse = ", ")
-            )
-          ),
-          # input box to enter number of combinations
-          numericInput(
-            inputId = "n_combo",
-            label = "Number of combinations",
-            width = "50%",
-            value = 2,
-            min = 2,
-            max = 10
-          )
-        ),
-        
-        div(
-          h3("Antidepressants"),
-          # input box to enter medications
-          selectizeInput(
-            inputId = "meds_lais",
-            label = label_meds,
-            choices = medsAntiDep$meds,
-            selected = NULL,
-            multiple = TRUE,
-            width = "100%",
-            options = list(
-              'plugins' = list('remove_button'),
-              'create' = TRUE,
-              'persist' = TRUE,
-              placeholder = paste(medsAntiDep[[1]], collapse = ", ")
-            )
-          ),
-          # input box to enter number of combinations
-          numericInput(
-            inputId = "n_combo",
-            label = "Number of combinations",
-            width = "50%",
-            value = 2,
-            min = 2,
-            max = 10
-          )
-        ),
-        
-        div(
-          h3("Benzodiazepines"),
-          # input box to enter medications
-          selectizeInput(
-            inputId = "meds_lais",
-            label = label_meds,
-            choices = medsBenzo$meds,
-            selected = NULL,
-            multiple = TRUE,
-            width = "100%",
-            options = list(
-              'plugins' = list('remove_button'),
-              'create' = TRUE,
-              'persist' = TRUE,
-            placeholder = paste(medsBenzo[[1]], collapse = ", ")
-            )
-            ),
-          # input box to enter number of combinations
-          numericInput(
-            inputId = "n_combo",
-            label = "Number of combinations",
-            width = "50%",
-            value = 2,
-            min = 2,
-            max = 10
-          )
-        ),
-                
-        div(
-          h3("Miscellaneous"),
-          # input box to enter medications
-          selectizeInput(
-            inputId = "meds_lais",
-            label = label_meds,
-            choices = medsMisc$meds,
-            selected = NULL,
-            multiple = TRUE,
-            width = "100%",
-            options = list(
-              'plugins' = list('remove_button'),
-              'create' = TRUE,
-              'persist' = TRUE,
-            placeholder = paste(medsMisc[[1]], collapse = ", ")
-            )
-            ),
-          # input box to enter number of combinations
-          numericInput(
-            inputId = "n_combo",
-            label = "Number of combinations",
-            width = "50%",
-            value = 2,
-            min = 2,
-            max = 10
-          )
-        )
+        inputMedClass(inTitle = "Antipsychotics", inId = "meds_antipsychotics", inMeds = medsList$medsAntiPsy),
+        inputMedClass(inTitle = "Long-Acting Injectables", inId = "meds_lais", inMeds = medsList$medsLAIs),
+        inputMedClass(inTitle = "Mood Stabilizers", inId = "meds_moodstabs", inMeds = medsList$medsMood),
+        inputMedClass(inTitle = "Antidepressants", inId = "meds_antideps", inMeds = medsList$medsAntiDep),
+        inputMedClass(inTitle = "Benzodiazepines", inId = "meds_benzos", inMeds = medsList$medsBenzo),
+        inputMedClass(inTitle = "Miscellaneous", inId = "meds_misc", inMeds = medsList$medsMisc),
 
       ),
       
