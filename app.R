@@ -9,7 +9,7 @@ medsList <- sapply(
   )
 names(medsList) <- c("medsAntiPsy", "medsLAIs", "medsMood", "medsAntiDep", "medsBenzo", "medsMisc")
 
-# input medications to UI
+# function to input medications to UI
 inputMedClass <- function(inTitle, inId,inMeds){
   div(
     h3(inTitle),
@@ -52,12 +52,12 @@ ui <- fluidPage(
       
       sidebarPanel(
         
-        inputMedClass(inTitle = "Antipsychotics", inId = "meds_antipsychotics", inMeds = medsList$medsAntiPsy),
-        inputMedClass(inTitle = "Long-Acting Injectables", inId = "meds_lais", inMeds = medsList$medsLAIs),
-        inputMedClass(inTitle = "Mood Stabilizers", inId = "meds_moodstabs", inMeds = medsList$medsMood),
-        inputMedClass(inTitle = "Antidepressants", inId = "meds_antideps", inMeds = medsList$medsAntiDep),
-        inputMedClass(inTitle = "Benzodiazepines", inId = "meds_benzos", inMeds = medsList$medsBenzo),
-        inputMedClass(inTitle = "Miscellaneous", inId = "meds_misc", inMeds = medsList$medsMisc),
+        inputMedClass(inTitle = "Antipsychotics", inId = "medsAntiPsy", inMeds = medsList$medsAntiPsy),
+        inputMedClass(inTitle = "Long-Acting Injectables", inId = "medsLAIs", inMeds = medsList$medsLAIs),
+        inputMedClass(inTitle = "Mood Stabilizers", inId = "medsMood", inMeds = medsList$medsMood),
+        inputMedClass(inTitle = "Antidepressants", inId = "medsAntiDep", inMeds = medsList$medsAntiDep),
+        inputMedClass(inTitle = "Benzodiazepines", inId = "medsBenzo", inMeds = medsList$medsBenzo),
+        inputMedClass(inTitle = "Miscellaneous", inId = "medsMisc", inMeds = medsList$medsMisc),
 
       ),
       
@@ -89,16 +89,23 @@ server <- function(input, output, session) {
 
   # run each time a user changes text
   output$table <- renderTable({
- 
-    # expand.grid method
-    meds <- as.character(input$meds_antipsychotics)
-    meds <- crossing(meds,meds)
+
+    meds_antipsyc <- as.character(input$medsAntiPsy)
+    meds_lais <- as.character(input$medsLAIs)
+    meds_mood <- as.character(input$medsMood)
+    meds_antidep <- as.character(input$medsAntiDep)
+    meds_benzo <- as.character(input$medsBenzo)
+    meds_misc <- as.character(input$medsMisc)
+
+    # expand_grid method
+    meds <- expand_grid(meds_antipsyc, meds_antipsyc, meds_lais) %>% 
+      filter(meds_antipsyc...1 != meds_antipsyc...2)
+return(meds)
     # size of source vector
     n <- length(meds)
     # size of target vectors
     r <- input$n_combo
-    return(meds)
-    
+
     tibble_combo <- as_tibble(
       meds
     )
@@ -116,7 +123,7 @@ server <- function(input, output, session) {
     #   combinations(n=n, r=r, v = meds, set = TRUE, repeats.allowed = FALSE)
     # )
     # names(tibble_combo) <- paste("Medication", 1:r)
-    
+
     # string to filter medication names
     filter_med1 <- str_to_lower(input$filter_med)
     # if text is provided for filtering by medication...
