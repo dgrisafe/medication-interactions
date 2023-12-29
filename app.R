@@ -68,19 +68,23 @@ server <- function(input, output, session) {
 
   observeEvent(input$medicationsPsychiatry, {
     
-    # source vector       
-    meds <- as.character(input$medicationsPsychiatry)
-    
-    # size of source vector
-    n <- length(meds)
-    
-    # size of target vectors
+    # initialize user input
+    n <- length(as.character(input$medicationsPsychiatry))
     r <- input$n_combo
     
-    if(n >= 2){
-      
+    if(n >= r){
+
       # run each time a user changes text
       output$table <- renderTable({
+        
+        # source vector       
+        meds <- as.character(input$medicationsPsychiatry)
+        
+        # size of source vector
+        n <- length(meds)
+        
+        # size of target vectors
+        r <- input$n_combo
     
         # string to filter medication names
         filter_med1 <- str_to_lower(input$filter_med)
@@ -92,14 +96,14 @@ server <- function(input, output, session) {
         names(tibble_combo) <- paste("Medication", 1:r)
         
         # if text is provided for filtering by medication...
-        if(!is.null(filter_med1)){
+        if(!is.null(filter_med)){
           # ...then filter medicine by that medication
           tibble_combo <- filter(
             .data = tibble_combo,
             if_any(.cols = everything(), .fns = ~ grepl(filter_med1, .))
           )
         }
-        
+ 
         # format table for document
         tibble_out <- mutate(
           # combine multiple medications into single column
