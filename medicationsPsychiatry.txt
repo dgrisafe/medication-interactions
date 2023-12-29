@@ -1,15 +1,25 @@
 haloperidol
-haloperidol decanoate
-aripiprazole PO
+aripiprazole
 clozapine
 fluphenazine
 olanzapine
 risperidone
 quetiapine
-aripiprazole IM (Abilify Maintena)
-aripiprazole lauroxil
+haloperidol decanoate
+aripiprazole (Abilify Maintena)
+aripiprazole lauroxil (Aristada)
 fluphenazine decanoate
-paliperidone palmitate
+paliperidone palmitate (Invega Sustenna)
 valproate
 lithium
 carbamazepine
+sertraline
+fluoxetine
+citalopram
+escitalopram
+lorazepam
+clonazepam
+alprazolam
+n-acetylcysteine
+clonidine
+propranolol
