@@ -96,7 +96,7 @@ server <- function(input, output, session) {
         names(tibble_combo) <- paste("Medication", 1:r)
         
         # if text is provided for filtering by medication...
-        if(!is.null(filter_med)){
+        if(!is.null(input$filter_med)){
           # ...then filter medicine by that medication
           tibble_combo <- filter(
             .data = tibble_combo,
