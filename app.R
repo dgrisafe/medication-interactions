@@ -66,65 +66,47 @@ ui <- fluidPage(
 # Define server logic required to create table of combinations
 server <- function(input, output, session) {
 
-  observeEvent(input$medicationsPsychiatry, {
+  # run each time a user changes text
+  output$table <- renderTable({
     
-    # initialize user input
-    n <- length(as.character(input$medicationsPsychiatry))
-    r <- input$n_combo
-    
-    if(n >= r){
-
-      # run each time a user changes text
-      output$table <- renderTable({
+    # input vars
+    meds <- as.character(input$medicationsPsychiatry) # source vector 
+    n <- length(meds) # size of source vector
+    r <- input$n_combo # size of target vectors
+    filter_txt <- input$filter_med # filter text
         
-        # source vector       
-        meds <- as.character(input$medicationsPsychiatry)
+    # create combinations of all possible entries
+    tibble_combo <- as_tibble(
+      combinations(n=n, r=r, v = meds, set = TRUE, repeats.allowed = FALSE)
+    )
+    names(tibble_combo) <- paste("Medication", 1:r)
         
-        # size of source vector
-        n <- length(meds)
-        
-        # size of target vectors
-        r <- input$n_combo
-    
-        # string to filter medication names
-        filter_med1 <- str_to_lower(input$filter_med)
-        
-        # create combinations of all possible entries
-        tibble_combo <- as_tibble(
-          combinations(n=n, r=r, v = meds, set = TRUE, repeats.allowed = FALSE)
-        )
-        names(tibble_combo) <- paste("Medication", 1:r)
-        
-        # if text is provided for filtering by medication...
-        if(!is.null(input$filter_med)){
-          # ...then filter medicine by that medication
-          tibble_combo <- filter(
-            .data = tibble_combo,
-            if_any(.cols = everything(), .fns = ~ grepl(filter_med1, .))
-          )
-        }
- 
-        # format table for document
-        tibble_out <- mutate(
-          # combine multiple medications into single column
-          unite(
-            data = tibble_combo, 
-            col = med_combo, sep = " + "
-          ), 
-          # capitalize first letter of each line
-          med_combo = gsub("^([a-z])", "\\U\\1", med_combo, perl=TRUE)
-        )
-        
-        # final output
-        names(tibble_out) <- paste("Combinations of", r, "Medications")
-        tibble_out
-        
-      })
-      
+    # if text is provided for filtering by medication...
+    if(!is.null(filter_txt)){
+      # ...then filter medicine by that medication
+      tibble_combo <- filter(
+        .data = tibble_combo,
+        if_any(.cols = everything(), .fns = ~ grepl(str_to_lower(filter_txt), .))
+      )
     }
-    
+ 
+    # format table for document
+    tibble_out <- mutate(
+      # combine multiple medications into single column
+      unite(
+        data = tibble_combo, 
+        col = med_combo, sep = " + "
+      ), 
+      # capitalize first letter of each line
+      med_combo = gsub("^([a-z])", "\\U\\1", med_combo, perl=TRUE)
+    )
+      
+    # final output
+    names(tibble_out) <- paste("Combinations of", r, "Medications")
+    tibble_out
+      
   })
-    
+      
 }
 
 # Run the application 
