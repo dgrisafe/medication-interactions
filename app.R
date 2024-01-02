@@ -1,8 +1,9 @@
 library(shiny)  # http://shiny.rstudio.com/
 library(tidyverse)
 library(gtools)
+library(DT)
 
-# input .txt file w/common psychiatric medicaions on each line
+# input .txt file w/common psychiatric medications on each line
 medsPsych <- as.data.frame(read.table(file = "medicationsPsychiatry.txt", header = FALSE, sep = "\n"))
 names(medsPsych) <- "meds"
 
@@ -45,7 +46,7 @@ ui <- fluidPage(
         # text to filter combinations by
         textInput(
           inputId = "filter_med",
-          label = "Filter combinations by medicine",
+          label = "Search combinations for a specific medicine",
           value = NULL,
           placeholder = "type the name of a single medicaiton (not case sensitive)"
         )
@@ -58,7 +59,10 @@ ui <- fluidPage(
         
         h3("Possible medication combinations include:"),
        
-        tableOutput("table"),
+        DTOutput("valu", width = "100%")
+        
+        # previous table output, without copy button
+        # tableOutput("table")
         
       )
     )
@@ -69,10 +73,6 @@ server <- function(input, output, session) {
   
   combine_meds <- reactive({
     
-    # run the app only if appropriate number of medications
-    # and combination numbers provided
-    if(length(input$medicationsPsychiatry) >= input$n_combo) { 
-      
       # input vars
       meds <- as.character(input$medicationsPsychiatry) # source vector 
       n <- length(meds) # size of source vector
@@ -109,19 +109,39 @@ server <- function(input, output, session) {
       names(tibble_out) <- paste("Combinations of", r, "Medications")
       return(tibble_out)
       
-    # print error code if not enough medications printed 
-    }else{"Please enter more medications"}
-
   })
 
-  # run each time a user changes text
-  output$table <- renderTable({
-    combine_meds()
-  })
+  output$valu <- renderDT({
+    
+    # run the app only if appropriate number of medications
+    # and combination numbers provided
+    if(length(input$medicationsPsychiatry) >= input$n_combo) { 
+      
+      data <- combine_meds()
+      
+      DT::datatable(
+        data,
+        class = 'cell-border stripe',
+        rownames = FALSE,
+        colnames = NULL,
+        extensions = c("Buttons", "Select"),
+        selection = 'none',
+        options = list(
+          select = TRUE,
+          dom = "Bt",  ##  remove f to remove search  ## Brftip
+          buttons = list(
+            list(
+              title = NULL,
+              extend = "copy",
+              text = 'Copy'#,
+              #exportOptions = list(modifier = list(selected = TRUE))
+              )
+            )
+          )) %>% 
+        formatStyle(0, target = "row", fontWeight = styleEqual(1, "bold")) 
+      }
 
-  copy_combos <- reactive({
-    paste(unlist(combine_meds()), sep = "\\<hr\\>")
-  })
+  }, server = FALSE)
 
 }
 
