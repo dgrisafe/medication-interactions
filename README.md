@@ -8,11 +8,11 @@ Link: [bit.ly/medixn](https://bit.ly/medixn)
 
 This [web application](https://bit.ly/medixn) lists all possible combinations of medications. 
 
-This does not return interactions between medications; see the [Drug Interaction Checker](https://reference.medscape.com/drug-interactionchecker) by Medscape.
-
-This tool only lists possible combinations of medications.
-
 This can be helpful when preparing medical documents, e.g., medication petitions.
+
+This tool only lists possible combinations of medications. It does not return interactions between medications; see the [Drug Interaction Checker](https://reference.medscape.com/drug-interactionchecker) by Medscape.
+
+**WARNING** the number of combinations can increase exponentially. Be judicious when searching for possible combinations.
 
 ## Medications
 
