@@ -69,6 +69,8 @@ server <- function(input, output, session) {
   
   combine_meds <- reactive({
     
+    # run the app only if appropriate number of medications
+    # and combination numbers provided
     if(length(input$medicationsPsychiatry) >= input$n_combo) { 
       
       # input vars
@@ -107,6 +109,7 @@ server <- function(input, output, session) {
       names(tibble_out) <- paste("Combinations of", r, "Medications")
       return(tibble_out)
       
+    # print error code if not enough medications printed 
     }else{"Please enter more medications"}
 
   })
