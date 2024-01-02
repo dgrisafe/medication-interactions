@@ -57,7 +57,8 @@ ui <- fluidPage(
         p("Your treatment team may prescribe more than one medication at a time."),
         
         h3("Possible medication combinations include:"),
-        tableOutput("table")
+       
+        tableOutput("table"),
         
       )
     )
@@ -65,48 +66,60 @@ ui <- fluidPage(
 
 # Define server logic required to create table of combinations
 server <- function(input, output, session) {
+  
+  combine_meds <- reactive({
+    
+    if(length(input$medicationsPsychiatry) >= input$n_combo) { 
+      
+      # input vars
+      meds <- as.character(input$medicationsPsychiatry) # source vector 
+      n <- length(meds) # size of source vector
+      r <- input$n_combo # size of target vectors
+      filter_txt <- input$filter_med # filter text
+      
+      # create combinations of all possible entries
+      tibble_combo <- as_tibble(
+        combinations(n=n, r=r, v = meds, set = TRUE, repeats.allowed = FALSE)
+      )
+      names(tibble_combo) <- paste("Medication", 1:r)
+      
+      # if text is provided for filtering by medication...
+      if(!is.null(filter_txt)){
+        # ...then filter medicine by that medication
+        tibble_combo <- filter(
+          .data = tibble_combo,
+          if_any(.cols = everything(), .fns = ~ grepl(str_to_lower(filter_txt), .))
+        )
+      }
+      
+      # format table for document
+      tibble_out <- mutate(
+        # combine multiple medications into single column
+        unite(
+          data = tibble_combo, 
+          col = med_combo, sep = " + "
+        ), 
+        # capitalize first letter of each line
+        med_combo = gsub("^([a-z])", "\\U\\1", med_combo, perl=TRUE)
+      )
+      
+      # final output
+      names(tibble_out) <- paste("Combinations of", r, "Medications")
+      return(tibble_out)
+      
+    }else{"Please enter more medications"}
+
+  })
 
   # run each time a user changes text
   output$table <- renderTable({
-    
-    # input vars
-    meds <- as.character(input$medicationsPsychiatry) # source vector 
-    n <- length(meds) # size of source vector
-    r <- input$n_combo # size of target vectors
-    filter_txt <- input$filter_med # filter text
-        
-    # create combinations of all possible entries
-    tibble_combo <- as_tibble(
-      combinations(n=n, r=r, v = meds, set = TRUE, repeats.allowed = FALSE)
-    )
-    names(tibble_combo) <- paste("Medication", 1:r)
-        
-    # if text is provided for filtering by medication...
-    if(!is.null(filter_txt)){
-      # ...then filter medicine by that medication
-      tibble_combo <- filter(
-        .data = tibble_combo,
-        if_any(.cols = everything(), .fns = ~ grepl(str_to_lower(filter_txt), .))
-      )
-    }
- 
-    # format table for document
-    tibble_out <- mutate(
-      # combine multiple medications into single column
-      unite(
-        data = tibble_combo, 
-        col = med_combo, sep = " + "
-      ), 
-      # capitalize first letter of each line
-      med_combo = gsub("^([a-z])", "\\U\\1", med_combo, perl=TRUE)
-    )
-      
-    # final output
-    names(tibble_out) <- paste("Combinations of", r, "Medications")
-    tibble_out
-      
+    combine_meds()
   })
-      
+
+  copy_combos <- reactive({
+    paste(unlist(combine_meds()), sep = "\\<hr\\>")
+  })
+
 }
 
 # Run the application 
