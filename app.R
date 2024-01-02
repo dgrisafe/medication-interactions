@@ -49,7 +49,9 @@ ui <- fluidPage(
           label = "Search combinations for a specific medicine",
           value = NULL,
           placeholder = "type the name of a single medicaiton (not case sensitive)"
-        )
+        ),
+        
+        tagList("See the", a("ReadMe", href="https://github.com/dgrisafe/medication-interactions/blob/ff5d50d8ce8eda14a9dd6748f49cc20683937c86/README.md"), "for more information on how to use this web application")
       ),
       
       # main panel output
