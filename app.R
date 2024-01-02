@@ -126,9 +126,11 @@ server <- function(input, output, session) {
         colnames = NULL,
         extensions = c("Buttons", "Select"),
         selection = 'none',
+        fillContainer = FALSE,
         options = list(
           select = TRUE,
-          dom = "Bt",  ##  remove f to remove search  ## Brftip
+          dom = "Brtip",  ##  remove f to remove search  ## Brftip
+          scrollX = TRUE,
           buttons = list(
             list(
               title = NULL,
