@@ -4,7 +4,7 @@ library(gtools)
 library(DT)
 
 # input .txt file w/common psychiatric medications on each line
-medsPsych <- as.data.frame(read.table(file = "medicationsPsychiatry.txt", header = FALSE, sep = "\n"))
+medsPsych <- as.data.frame(read.table(file = "data/medicationsPsychiatry.txt", header = FALSE, sep = "\n"))
 names(medsPsych) <- "meds"
 
 # Define UI for application that draws a histogram
