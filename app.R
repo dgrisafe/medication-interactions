@@ -130,6 +130,7 @@ server <- function(input, output, session) {
         selection = 'none',
         fillContainer = FALSE,
         options = list(
+          pageLength = 100,
           select = TRUE,
           dom = "Brtip",  ##  remove f to remove search  ## Brftip
           scrollX = TRUE,
