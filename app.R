@@ -13,6 +13,7 @@ ui <- fluidPage(
 
     # Application title
     titlePanel("Medication Interactions"),
+    a("bit.ly/medixn", href ="https://bit.ly/medixn"),
     
     # Sidebar 
     sidebarLayout(

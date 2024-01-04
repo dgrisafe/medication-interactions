@@ -1,8 +1,5 @@
 ## How to Use this Web App
 
-- Version 1.0
-- Link: [bit.ly/medixn](https://bit.ly/medixn)
-
 This [web application](https://bit.ly/medixn) lists all possible combinations of medications. 
 
 This can be helpful when preparing medical documents, e.g., medication petitions.
