@@ -3,7 +3,6 @@ library(tidyverse)
 library(gtools)
 library(DT)
 library(markdown)
-library(knitr)
 
 # input .txt file w/common psychiatric medications on each line
 medsPsych <- as.data.frame(read.table(file = "data/medicationsPsychiatry.txt", header = FALSE, sep = "\n"))
@@ -68,11 +67,10 @@ ui <- fluidPage(
       
     ),
     
-    # Application title
-    div(
-      # footer panel
-      uiOutput('markdown')
-    )
+    fluidRow(
+      includeMarkdown("README.md")
+      )
+    
 )
 
 # Define server logic required to create table of combinations
@@ -168,10 +166,6 @@ server <- function(input, output, session) {
       }
 
   }, server = FALSE)
-
-  output$markdown <- renderUI({
-    HTML(markdownToHTML(knit('README.md', quiet = TRUE)))
-  })
   
 }
 
