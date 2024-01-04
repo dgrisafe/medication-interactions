@@ -2,6 +2,8 @@ library(shiny)  # http://shiny.rstudio.com/
 library(tidyverse)
 library(gtools)
 library(DT)
+library(markdown)
+library(knitr)
 
 # input .txt file w/common psychiatric medications on each line
 medsPsych <- as.data.frame(read.table(file = "data/medicationsPsychiatry.txt", header = FALSE, sep = "\n"))
@@ -12,7 +14,7 @@ ui <- fluidPage(
 
     # Application title
     titlePanel("Medication Interactions"),
-
+    
     # Sidebar 
     sidebarLayout(
       
@@ -49,9 +51,8 @@ ui <- fluidPage(
           label = "Search combinations for a specific medicine",
           value = NULL,
           placeholder = "type the name of a single medicaiton (not case sensitive)"
-        ),
+        )
         
-        tagList("See the", a("ReadMe", href="https://github.com/dgrisafe/medication-interactions/blob/ff5d50d8ce8eda14a9dd6748f49cc20683937c86/README.md"), "for more information on how to use this web application")
       ),
       
       # main panel output
@@ -63,10 +64,14 @@ ui <- fluidPage(
        
         DTOutput("valu", width = "100%")
         
-        # previous table output, without copy button
-        # tableOutput("table")
-        
       )
+      
+    ),
+    
+    # Application title
+    div(
+      # footer panel
+      uiOutput('markdown')
     )
 )
 
@@ -148,6 +153,10 @@ server <- function(input, output, session) {
 
   }, server = FALSE)
 
+  output$markdown <- renderUI({
+    HTML(markdownToHTML(knit('README.md', quiet = TRUE)))
+  })
+  
 }
 
 # Run the application 
