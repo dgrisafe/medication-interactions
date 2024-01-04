@@ -61,15 +61,17 @@ ui <- fluidPage(
         
         h3("Possible medication combinations include:"),
        
-        DTOutput("valu", width = "100%")
+        DTOutput("valu", width = "100%"),
         
       )
       
     ),
     
-    fluidRow(
-      includeMarkdown("README.md")
-      )
+    # add a row at the bottom with the readme .md file
+    fluidRow(column(12, 
+        includeMarkdown("README.md")
+        )
+    )
     
 )
 
