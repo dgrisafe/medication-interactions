@@ -78,26 +78,41 @@ ui <- fluidPage(
 # Define server logic required to create table of combinations
 server <- function(input, output, session) {
   
+  # widget input medications
+  medicationsPsychiatry <- reactive({
+    as.character(input$medicationsPsychiatry)
+  })
+
+  # widget input number of combinations
+  n_combo <- reactive({
+    input$n_combo # size of target vectors
+  })  
+  
+  # widget input search text to filter all medication combinations
+  filter_med <- reactive({
+    input$filter_med # size of target vectors
+  })  
+  
   combine_meds <- reactive({
-    
-      # input vars
-      meds <- as.character(input$medicationsPsychiatry) # source vector 
-      n <- length(meds) # size of source vector
-      r <- input$n_combo # size of target vectors
-      filter_txt <- input$filter_med # filter text
-      
+
       # create combinations of all possible entries
       tibble_combo <- as_tibble(
-        combinations(n=n, r=r, v = meds, set = TRUE, repeats.allowed = FALSE)
+        combinations(
+          n=length(medicationsPsychiatry()), 
+          r=n_combo(), 
+          v = medicationsPsychiatry(), 
+          set = TRUE, 
+          repeats.allowed = FALSE
+          )
       )
-      names(tibble_combo) <- paste("Medication", 1:r)
+      names(tibble_combo) <- paste("Medication", 1:n_combo())
       
       # if text is provided for filtering by medication...
-      if(!is.null(filter_txt)){
+      if(!is.null(filter_med())){
         # ...then filter medicine by that medication
         tibble_combo <- filter(
           .data = tibble_combo,
-          if_any(.cols = everything(), .fns = ~ grepl(str_to_lower(filter_txt), .))
+          if_any(.cols = everything(), .fns = ~ grepl(str_to_lower(filter_med()), .))
         )
       }
       
@@ -106,14 +121,15 @@ server <- function(input, output, session) {
         # combine multiple medications into single column
         unite(
           data = tibble_combo, 
-          col = med_combo, sep = " + "
+          col = med_combo, 
+          sep = " + "
         ), 
         # capitalize first letter of each line
         med_combo = gsub("^([a-z])", "\\U\\1", med_combo, perl=TRUE)
       )
       
       # final output
-      names(tibble_out) <- paste("Combinations of", r, "Medications")
+      names(tibble_out) <- paste("Combinations of", n_combo(), "Medications")
       return(tibble_out)
       
   })
@@ -122,7 +138,7 @@ server <- function(input, output, session) {
     
     # run the app only if appropriate number of medications
     # and combination numbers provided
-    if(length(input$medicationsPsychiatry) >= input$n_combo) { 
+    if(length(medicationsPsychiatry()) >= n_combo()) { 
       
       data <- combine_meds()
       
